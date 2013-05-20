@@ -1,4 +1,4 @@
-python-api-sample
+Geopal API Samples
 =================
 
-Geopal api code in python
+Geopal API Sample code in different languages
