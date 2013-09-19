@@ -139,28 +139,28 @@ public class MainClass
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         pairs.add(new BasicNameValuePair("job_id", jobId));
 
-        JSONObjectWrapper geopalRequestJob = new JSONObjectWrapper(geopalClient.get(pairs).toJSON()
+        JSONObjectWrapper response = new JSONObjectWrapper(geopalClient.get(pairs).toJSON()
                 .getJSONObject("job"));
-        System.out.println("Job Identifier: " + geopalRequestJob.getString("identifier"));
+        System.out.println("Job Identifier: " + response.getString("identifier"));
         System.out.println("Job Template: "
-                + geopalRequestJob.getJSONObject("job_template").getString("name"));
+                + response.getJSONObject("job_template").getString("name"));
 
         System.out.println("Job Fields");
 
-        for (int i = 0; i < geopalRequestJob.getJSONArray("job_fields").length(); i++) {
-            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(geopalRequestJob
+        for (int i = 0; i < response.getJSONArray("job_fields").length(); i++) {
+            JSONObjectWrapper fieldJsonObject = new JSONObjectWrapper(response
                     .getJSONArray("job_fields").getJSONObject(i));
-            System.out.println(jsonObjectTemplate.getString("name", "") + " ("
-                    + jsonObjectTemplate.getInt("id") + ") "
-                    + jsonObjectTemplate.getString("action_value_entered"));
+            System.out.println(fieldJsonObject.getString("name", "") + " ("
+                    + fieldJsonObject.getInt("id") + ") "
+                    + fieldJsonObject.getString("action_value_entered"));
         }
 
-        for (int i = 0; i < geopalRequestJob.getJSONArray("job_workflows").length(); i++) {
-            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(geopalRequestJob
+        for (int i = 0; i < response.getJSONArray("job_workflows").length(); i++) {
+            JSONObjectWrapper workflowJsonObject = new JSONObjectWrapper(response
                     .getJSONArray("job_workflows").getJSONObject(i));
-            System.out.println(jsonObjectTemplate.getString("name", "") + " ("
-                    + jsonObjectTemplate.getInt("id") + ") "
-                    + jsonObjectTemplate.getString("action_value_entered"));
+            System.out.println(workflowJsonObject.getString("name", "") + " ("
+                    + workflowJsonObject.getInt("id") + ") "
+                    + workflowJsonObject.getString("action_value_entered"));
         }
 
     }
@@ -183,26 +183,26 @@ public class MainClass
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         pairs.add(new BasicNameValuePair("template_id", jobTemplateId));
 
-        JSONObjectWrapper geopalRequestJobTemplate = new JSONObjectWrapper(geopalClient.get(pairs)
+        JSONObjectWrapper response = new JSONObjectWrapper(geopalClient.get(pairs)
                 .toJSON().getJSONObject("job_template"));
 
-        System.out.println("Job Template Name = " + geopalRequestJobTemplate.getString("name"));
+        System.out.println("Job Template Name = " + response.getString("name"));
         System.out.println("Job Fields");
 
-        for (int i = 0; i < geopalRequestJobTemplate.getJSONArray("job_template_fields").length(); i++) {
-            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(geopalRequestJobTemplate
+        for (int i = 0; i < response.getJSONArray("job_template_fields").length(); i++) {
+            JSONObjectWrapper fieldJsonObject = new JSONObjectWrapper(response
                     .getJSONArray("job_template_fields").getJSONObject(i));
-            System.out.println(jsonObjectTemplate.getString("name", "") + " ("
-                    + jsonObjectTemplate.getInt("id") + ")");
+            System.out.println(fieldJsonObject.getString("name", "") + " ("
+                    + fieldJsonObject.getInt("id") + ")");
         }
 
-        for (int i = 0; i < geopalRequestJobTemplate.getJSONArray("job_template_workflows")
+        for (int i = 0; i < response.getJSONArray("job_template_workflows")
                 .length(); i++) {
-            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(geopalRequestJobTemplate
+            JSONObjectWrapper workflowJsonObject = new JSONObjectWrapper(response
                     .getJSONArray("job_template_workflows").getJSONObject(i));
-            System.out.println(jsonObjectTemplate.getString("name", "") + " ("
-                    + jsonObjectTemplate.getInt("id") + ") ["
-                    + jsonObjectTemplate.getString("action") + "]");
+            System.out.println(workflowJsonObject.getString("name", "") + " ("
+                    + workflowJsonObject.getInt("id") + ") ["
+                    + workflowJsonObject.getString("action") + "]");
         }
 
     }
@@ -219,13 +219,13 @@ public class MainClass
         JSONObjectWrapper jsonObject;
         try {
             jsonObject = geopalClient.get().toJSON();
-            JSONArray jsonArrayTemplates = jsonObject.getJSONArray("job_templates");
+            JSONArray response = jsonObject.getJSONArray("job_templates");
 
-            for (int i = 0; i < jsonArrayTemplates.length(); i++) {
-                JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(
-                        jsonArrayTemplates.getJSONObject(i));
-                System.out.println(jsonObjectTemplate.getString("name", "") + " ("
-                        + jsonObjectTemplate.getInt("job_template_id") + ")");
+            for (int i = 0; i < response.length(); i++) {
+                JSONObjectWrapper templateJsonObject = new JSONObjectWrapper(
+                        response.getJSONObject(i));
+                System.out.println(templateJsonObject.getString("name", "") + " ("
+                        + templateJsonObject.getInt("job_template_id") + ")");
             }
         } catch (GeopalClientException e) {
             // TODO Auto-generated catch block
@@ -263,10 +263,10 @@ public class MainClass
         geopalClient.setPrivateKey(privateKey);
         JSONArray response = geopalClient.get(pairs).toJSON().getJSONArray("jobs");
         for (int i = 0; i < response.length(); i++) {
-            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(
+            JSONObjectWrapper jobJsonObject = new JSONObjectWrapper(
                     response.getJSONObject(i));
-            System.out.println(jsonObjectTemplate.getInt("id"));
-            readAJob(jsonObjectTemplate.getInt("id"));
+            System.out.println(jobJsonObject.getInt("id"));
+            readAJob(jobJsonObject.getInt("id"));
         }
     }
 
@@ -285,12 +285,12 @@ public class MainClass
         geopalClient.setPrivateKey(privateKey);
         JSONArray response = geopalClient.get().toJSON().getJSONArray("employees");
         for (int i = 0; i < response.length(); i++) {
-            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(
+            JSONObjectWrapper employeeJsonObject = new JSONObjectWrapper(
                     response.getJSONObject(i));
-            System.out.println(jsonObjectTemplate.getString("first_name", "") + " "
-                    + jsonObjectTemplate.getString("last_name") + " ("
-                    + jsonObjectTemplate.getInt("id") + ") "
-                    + jsonObjectTemplate.getString("address", ""));
+            System.out.println(employeeJsonObject.getString("first_name", "") + " "
+                    + employeeJsonObject.getString("last_name") + " ("
+                    + employeeJsonObject.getInt("id") + ") "
+                    + employeeJsonObject.getString("address", ""));
         }
 
     }
