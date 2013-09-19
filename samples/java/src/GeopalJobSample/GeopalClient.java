@@ -20,8 +20,11 @@ import org.apache.http.util.EntityUtils;
 import com.edm.geopal.json.JSONObjectWrapper;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -249,8 +252,9 @@ public class GeopalClient
     private HttpGet updateHTTPClientWithSignature(HttpGet httpget, String uri)
     {
         String method = "get";
-        java.util.Date now = new java.util.Date();
-        String timestamp = String.format("{0:ddd, dd MMM yyyy hh:mm:ss }", now) + "GMT";
+        String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
+        String timestamp = format.format(Calendar.getInstance().getTime());
         String signature = getSignature(method + uri + employeeId + timestamp, privateKey);
         httpget.setHeader("GEOPAL_SIGNATURE", signature);
         httpget.setHeader("GEOPAL_TIMESTAMP", timestamp);
@@ -263,8 +267,9 @@ public class GeopalClient
     private HttpPut updateHTTPClientWithSignature(HttpPut httpput, String uri)
     {
         String method = "put";
-        java.util.Date now = new java.util.Date();
-        String timestamp = String.format("{0:ddd, dd MMM yyyy hh:mm:ss }", now) + "GMT";
+        String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
+        String timestamp = format.format(Calendar.getInstance().getTime());
         String signature = getSignature(method + uri + employeeId + timestamp, privateKey);
         httpput.setHeader("GEOPAL_SIGNATURE", signature);
         httpput.setHeader("GEOPAL_TIMESTAMP", timestamp);
@@ -277,8 +282,9 @@ public class GeopalClient
     private HttpPost updateHTTPClientWithSignature(HttpPost httpPost, String uri)
     {
         String method = "post";
-        java.util.Date now = new java.util.Date();
-        String timestamp = String.format("{0:ddd, dd MMM yyyy hh:mm:ss }", now) + "GMT";
+        String pattern = "EEE, dd MMM yyyy HH:mm:ss Z";
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
+        String timestamp = format.format(Calendar.getInstance().getTime());
         String signature = getSignature(method + uri + employeeId + timestamp, privateKey);
         httpPost.setHeader("GEOPAL_SIGNATURE", signature);
         httpPost.setHeader("GEOPAL_TIMESTAMP", timestamp);
