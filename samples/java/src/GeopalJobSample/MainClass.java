@@ -26,11 +26,11 @@ public class MainClass
         System.out.println("Geopal Sample");
         System.out.println("Please Enter Employee ID:");
 
-            employeeId = bufferRead.readLine();
- 
+        employeeId = bufferRead.readLine();
+
         System.out.println("Please Enter Private Key:");
-            privateKey = bufferRead.readLine();
-   
+        privateKey = bufferRead.readLine();
+
         int choice = 0;
         while (choice != -1) {
             System.out.println("");
@@ -53,7 +53,7 @@ public class MainClass
 
             switch (choice) {
                 case 1:
-                    // createAJob ();
+                    createAJob();
                     break;
                 case 2:
                     readAJob();
@@ -65,7 +65,7 @@ public class MainClass
                     readTemplate();
                     break;
                 case 5:
-                    readJobsDateRange ();
+                    readJobsDateRange();
                     break;
                 case 6:
                     listEmployess();
@@ -78,6 +78,39 @@ public class MainClass
 
     }
 
+    /**
+     * creates a job
+     * 
+     * @throws IOException
+     * @throws JSONException
+     * @throws GeopalClientException
+     */
+    private static void createAJob() throws IOException, JSONException, GeopalClientException
+    {
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Please enter a job template id");
+        String jobTemplateId = bufferRead.readLine();
+        GeopalClient geopalClient = new GeopalClient("api/jobs/createandassign");
+        geopalClient.setEmployeeId(employeeId);
+        geopalClient.setPrivateKey(privateKey);
+
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+        pairs.add(new BasicNameValuePair("template_id", jobTemplateId));
+
+        JSONObjectWrapper response = new JSONObjectWrapper(geopalClient.post(pairs).toJSON()
+                .getJSONObject("job"));
+
+        System.out.println("Created Job With Identifier = " + response.getString("identifier"));
+        System.out.println("Created Job With Id = " + response.getInt("id"));
+    }
+
+    /**
+     * reads a new job
+     * 
+     * @throws IOException
+     * @throws JSONException
+     * @throws GeopalClientException
+     */
     private static void readAJob() throws IOException, JSONException, GeopalClientException
     {
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
@@ -85,7 +118,18 @@ public class MainClass
         String jobId = bufferRead.readLine();
         readAJob(jobId);
     }
+    
+    private static void readAJob(int jobId) throws JSONException, GeopalClientException {
+        readAJob(String.valueOf(jobId));
+    }
 
+    /**
+     * reads in an existing job
+     * 
+     * @param jobId
+     * @throws JSONException
+     * @throws GeopalClientException
+     */
     private static void readAJob(String jobId) throws JSONException, GeopalClientException
     {
         GeopalClient geopalClient = new GeopalClient("api/jobs/get");
@@ -121,6 +165,12 @@ public class MainClass
 
     }
 
+    /**
+     * reads in a new job template
+     * 
+     * @throws GeopalClientException
+     * @throws IOException
+     */
     private static void readTemplate() throws GeopalClientException, IOException
     {
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
@@ -157,6 +207,10 @@ public class MainClass
 
     }
 
+    /**
+     * reads in all job templates
+     * 
+     */
     private static void listTemplates()
     {
         GeopalClient geopalClient = new GeopalClient("api/jobtemplates/all");
@@ -180,39 +234,50 @@ public class MainClass
 
     }
 
-    private static void readJobsDateRange () throws JSONException, GeopalClientException, IOException
+    /**
+     * reads in jobs via date range
+     * 
+     * @throws JSONException
+     * @throws GeopalClientException
+     * @throws IOException
+     */
+    private static void readJobsDateRange() throws JSONException, GeopalClientException,
+            IOException
     {
-        System.out.println("Please enter a from date (yyyy-MM-dd HH:mm:ss) see http://msdn.microsoft.com/en-us/library/8kb3ddd4.aspx");
-        
+        System.out
+                .println("Please enter a from date (yyyy-MM-dd HH:mm:ss) see http://msdn.microsoft.com/en-us/library/8kb3ddd4.aspx");
+
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-        
-        String dateTimeFrom = bufferRead.readLine ();
-        
-    
+
+        String dateTimeFrom = bufferRead.readLine();
+
         System.out.println("Please enter a to date (yyyy-MM-dd HH:mm:ss)");
-        String dateTimeTo = bufferRead.readLine ();
-        
+        String dateTimeTo = bufferRead.readLine();
+
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         pairs.add(new BasicNameValuePair("date_time_from", dateTimeFrom));
         pairs.add(new BasicNameValuePair("date_time_to", dateTimeTo));
-        
-        GeopalClient geopalClient = new GeopalClient ("api/jobsearch/ids");
-        geopalClient.setEmployeeId (employeeId);
-        geopalClient.setPrivateKey (privateKey);
-         JSONArray response = geopalClient.get(pairs).toJSON().getJSONArray("jobs");
-         for (int i = 0; i < response.length(); i++) {
-             JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(
-                     response.getJSONObject(i));
-             System.out.println(jsonObjectTemplate.getInt("id"));
-             readAJob(jsonObjectTemplate.getInt("id"));
-         }
-    }
-    
-    private static void readAJob(int jobId) throws JSONException, GeopalClientException {
-        readAJob(String.valueOf(jobId));
-        
+
+        GeopalClient geopalClient = new GeopalClient("api/jobsearch/ids");
+        geopalClient.setEmployeeId(employeeId);
+        geopalClient.setPrivateKey(privateKey);
+        JSONArray response = geopalClient.get(pairs).toJSON().getJSONArray("jobs");
+        for (int i = 0; i < response.length(); i++) {
+            JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(
+                    response.getJSONObject(i));
+            System.out.println(jsonObjectTemplate.getInt("id"));
+            readAJob(jsonObjectTemplate.getInt("id"));
+        }
     }
 
+    
+
+    /**
+     * lists all employees
+     * 
+     * @throws JSONException
+     * @throws GeopalClientException
+     */
     private static void listEmployess() throws JSONException, GeopalClientException
     {
         GeopalClient geopalClient = new GeopalClient("api/employees/all");
