@@ -30,7 +30,7 @@ public class GeopalClient
 {
     private static final String DEFAULT_PRIVATEKEY = "";
     private static final String DEFAULT_EMPLOYEEID = "";
-    private static final String GEOPAL_BASE_URL = "http://geopal.local/";
+    private static final String GEOPAL_BASE_URL = "https://app.geopalsolutions.com/";
 
     private String uri = "";
     private String employeeId = DEFAULT_EMPLOYEEID;
