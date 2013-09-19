@@ -17,8 +17,10 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import com.edm.geopal.json.JSONObjectWrapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.Mac;
@@ -28,7 +30,7 @@ public class GeopalClient
 {
     private static final String DEFAULT_PRIVATEKEY = "";
     private static final String DEFAULT_EMPLOYEEID = "";
-    private static final String GEOPAL_BASE_URL = "https://app.geopalsolutions.com/";
+    private static final String GEOPAL_BASE_URL = "http://geopal.local/";
 
     private String uri = "";
     private String employeeId = DEFAULT_EMPLOYEEID;
@@ -46,164 +48,189 @@ public class GeopalClient
         setUri(uri);
     }
 
-    public GeopalClient get( List<NameValuePair> params) throws GeopalClientException {
-
-	    CloseableHttpClient httpclient = null;
-	    try {
-	     httpclient = HttpClients.createDefault();
-	    
-        String paramString = URLEncodedUtils.format(params, "utf-8");
-        String url = getApiUrl(uri) + "?" + paramString;
-
-        HttpGet httpget = new HttpGet(url);
-        httpget = updateHTTPClientWithSignature(httpget, uri);
-
-        CloseableHttpResponse response = null;
-        try {
-            response = httpclient.execute(httpget);
-        } catch (ClientProtocolException e) {
-            throw new GeopalClientException();
-        } catch (IOException e) {
-            throw new GeopalClientException();
-        } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                throw new GeopalClientException();
-            }
-        }
-
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new GeopalClientException();
-        } 
-
-        HttpEntity entity = response.getEntity();
-        try {
-            lastResponse = EntityUtils.toString(entity);
-        } catch (ParseException e) {
-            throw new GeopalClientException();
-        } catch (IOException e) {
-            throw new GeopalClientException();
-        }
-
-            return this;
-	    } finally {
-	        try {
-                httpclient.close();
-            } catch (IOException e) {
-                throw new GeopalClientException();
-            }
-	    }
+    /**
+     * @return
+     * @throws GeopalClientException
+     */
+    public GeopalClient get() throws GeopalClientException {
+        return this.get(new ArrayList<NameValuePair>());
     }
-    
-    
-    
-    
-    public GeopalClient put( List<NameValuePair> params) throws GeopalClientException {
+
+    /**
+     * @param params
+     * @return
+     * @throws GeopalClientException
+     */
+    public GeopalClient get(List<NameValuePair> params) throws GeopalClientException {
 
         CloseableHttpClient httpclient = null;
-        try {
-         httpclient = HttpClients.createDefault();
-        
-        String url = getApiUrl(uri);
-
-        HttpPut httpPut = new HttpPut(url);
-        httpPut = updateHTTPClientWithSignature(httpPut, uri);
-
         CloseableHttpResponse response = null;
         try {
-            httpPut.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-            
-            response = httpclient.execute(httpPut);
-        } catch (ClientProtocolException e) {
-            throw new GeopalClientException();
-        } catch (IOException e) {
-            throw new GeopalClientException();
-        } finally {
+            httpclient = HttpClients.createDefault();
+            String paramString = URLEncodedUtils.format(params, "utf-8");
+            String url = getApiUrl(uri) + "?" + paramString;
+
+            HttpGet httpget = new HttpGet(url);
+            httpget = updateHTTPClientWithSignature(httpget, uri);
+
             try {
-                response.close();
+                response = httpclient.execute(httpget);
+            } catch (ClientProtocolException e) {
+                throw new GeopalClientException();
             } catch (IOException e) {
                 throw new GeopalClientException();
             }
-        }
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new GeopalClientException();
-        } 
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new GeopalClientException();
+            }
 
-        HttpEntity entity = response.getEntity();
-        try {
-            lastResponse = EntityUtils.toString(entity);
-        } catch (ParseException e) {
-            throw new GeopalClientException();
-        } catch (IOException e) {
-            throw new GeopalClientException();
-        }
+            HttpEntity entity = response.getEntity();
+            try {
+                lastResponse = EntityUtils.toString(entity);
+            } catch (ParseException e) {
+                throw new GeopalClientException();
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
 
             return this;
         } finally {
             try {
-                httpclient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
+            
+            try {
+                if (httpclient != null) {
+                    httpclient.close();
+                }
             } catch (IOException e) {
                 throw new GeopalClientException();
             }
         }
     }
-    
-    
-    public GeopalClient post( List<NameValuePair> params) throws GeopalClientException {
+
+    public GeopalClient put(List<NameValuePair> params) throws GeopalClientException {
 
         CloseableHttpClient httpclient = null;
-        try {
-         httpclient = HttpClients.createDefault();
-        
-        String url = getApiUrl(uri);
-
-        HttpPost httpPost = new HttpPost(url);
-        httpPost = updateHTTPClientWithSignature(httpPost, uri);
-
         CloseableHttpResponse response = null;
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+            httpclient = HttpClients.createDefault();
+
+            String url = getApiUrl(uri);
+
+            HttpPut httpPut = new HttpPut(url);
+            httpPut = updateHTTPClientWithSignature(httpPut, uri);
+
             
-            response = httpclient.execute(httpPost);
-        } catch (ClientProtocolException e) {
-            throw new GeopalClientException();
-        } catch (IOException e) {
-            throw new GeopalClientException();
-        } finally {
             try {
-                response.close();
+                httpPut.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+
+                response = httpclient.execute(httpPut);
+            } catch (ClientProtocolException e) {
+                throw new GeopalClientException();
             } catch (IOException e) {
                 throw new GeopalClientException();
             }
-        }
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new GeopalClientException();
-        } 
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new GeopalClientException();
+            }
 
-        HttpEntity entity = response.getEntity();
-        try {
-            lastResponse = EntityUtils.toString(entity);
-        } catch (ParseException e) {
-            throw new GeopalClientException();
-        } catch (IOException e) {
-            throw new GeopalClientException();
-        }
+            HttpEntity entity = response.getEntity();
+            try {
+                lastResponse = EntityUtils.toString(entity);
+            } catch (ParseException e) {
+                throw new GeopalClientException();
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
 
             return this;
         } finally {
             try {
-                httpclient.close();
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
+            
+            try {
+                if (httpclient != null) {
+                    httpclient.close();
+                }
             } catch (IOException e) {
                 throw new GeopalClientException();
             }
         }
     }
 
+    public GeopalClient post(List<NameValuePair> params) throws GeopalClientException {
 
-    
+        CloseableHttpClient httpclient = null;
+        CloseableHttpResponse response = null;
+        try {
+            httpclient = HttpClients.createDefault();
+
+            String url = getApiUrl(uri);
+
+            HttpPost httpPost = new HttpPost(url);
+            httpPost = updateHTTPClientWithSignature(httpPost, uri);
+
+            
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+
+                response = httpclient.execute(httpPost);
+            } catch (ClientProtocolException e) {
+                throw new GeopalClientException();
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            } 
+
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new GeopalClientException();
+            }
+
+            HttpEntity entity = response.getEntity();
+            try {
+                lastResponse = EntityUtils.toString(entity);
+            } catch (ParseException e) {
+                throw new GeopalClientException();
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
+
+            return this;
+        } finally {
+            try {
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
+            
+            try {
+                if (httpclient != null) {
+                    httpclient.close();
+                }
+            } catch (IOException e) {
+                throw new GeopalClientException();
+            }
+        }
+    }
+
+    public JSONObjectWrapper toJSON()
+    {
+        return new JSONObjectWrapper(lastResponse);
+    }
+
     public final void setUri(String uri)
     {
         this.uri = uri;
@@ -219,8 +246,6 @@ public class GeopalClient
         this.privateKey = privatekey;
     }
 
-
-
     private HttpGet updateHTTPClientWithSignature(HttpGet httpget, String uri)
     {
         String method = "get";
@@ -234,8 +259,7 @@ public class GeopalClient
         return httpget;
 
     }
-    
-    
+
     private HttpPut updateHTTPClientWithSignature(HttpPut httpput, String uri)
     {
         String method = "put";
@@ -249,8 +273,7 @@ public class GeopalClient
         return httpput;
 
     }
-    
-    
+
     private HttpPost updateHTTPClientWithSignature(HttpPost httpPost, String uri)
     {
         String method = "post";
@@ -270,17 +293,17 @@ public class GeopalClient
         String test = getHMAC256(privateKey, signtext);
         return Base64.encodeBase64String(test.getBytes());
     }
-    
+
     public String getHMAC256(String pwd, String inputdata) {
         String temp = null;
         SecretKeySpec keySpec = new SecretKeySpec(pwd.getBytes(), "HmacSHA256");
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(keySpec);
-            //update method adds the given byte to the Mac's input data. 
+            // update method adds the given byte to the Mac's input data.
             mac.update(inputdata.getBytes());
             byte[] m = mac.doFinal();
-            //The base64-encoder in Commons Codec
+            // The base64-encoder in Commons Codec
             temp = new String(Hex.encodeHex(m));
         } catch (Exception e) {
             e.printStackTrace();
