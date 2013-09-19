@@ -65,7 +65,7 @@ public class MainClass
                     readTemplate();
                     break;
                 case 5:
-                    // readJobsDateRange ();
+                    readJobsDateRange ();
                     break;
                 case 6:
                     listEmployess();
@@ -178,6 +178,39 @@ public class MainClass
             e.printStackTrace();
         }
 
+    }
+
+    private static void readJobsDateRange () throws JSONException, GeopalClientException, IOException
+    {
+        System.out.println("Please enter a from date (yyyy-MM-dd HH:mm:ss) see http://msdn.microsoft.com/en-us/library/8kb3ddd4.aspx");
+        
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        
+        String dateTimeFrom = bufferRead.readLine ();
+        
+    
+        System.out.println("Please enter a to date (yyyy-MM-dd HH:mm:ss)");
+        String dateTimeTo = bufferRead.readLine ();
+        
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+        pairs.add(new BasicNameValuePair("date_time_from", dateTimeFrom));
+        pairs.add(new BasicNameValuePair("date_time_to", dateTimeTo));
+        
+        GeopalClient geopalClient = new GeopalClient ("api/jobsearch/ids");
+        geopalClient.setEmployeeId (employeeId);
+        geopalClient.setPrivateKey (privateKey);
+         JSONArray response = geopalClient.get(pairs).toJSON().getJSONArray("jobs");
+         for (int i = 0; i < response.length(); i++) {
+             JSONObjectWrapper jsonObjectTemplate = new JSONObjectWrapper(
+                     response.getJSONObject(i));
+             System.out.println(jsonObjectTemplate.getInt("id"));
+             readAJob(jsonObjectTemplate.getInt("id"));
+         }
+    }
+    
+    private static void readAJob(int jobId) throws JSONException, GeopalClientException {
+        readAJob(String.valueOf(jobId));
+        
     }
 
     private static void listEmployess() throws JSONException, GeopalClientException
