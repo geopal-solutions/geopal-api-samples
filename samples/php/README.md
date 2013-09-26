@@ -1,0 +1,1 @@
+PLease find the php sample here https://github.com/geopal-solutions/geopal-php-client
